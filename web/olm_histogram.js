@@ -7,11 +7,19 @@ function removeInputs(node, filter) {
     node.type !== "OlmHistogram" ||
     node.id === -1 ||
     !Array.isArray(node.inputs)
-  )
+  ) {
     return;
+  }
   for (let i = node.inputs.length - 1; i >= 0; i--) {
     if (filter(node.inputs[i])) {
-      node.removeInput(i);
+      try {
+        node.removeInput(i);
+      } catch (error) {
+        console.warn(
+          `[OlmHistogram] Node ${node.id}: skipping input removal (graph not ready):`,
+          node.inputs[i].name
+        );
+      }
     }
   }
 }
