@@ -7,7 +7,7 @@ A compact, real-time histogram analysis node for ComfyUI — with easy-to-use in
 - Author: Olli Sorjonen
 - GitHub: https://github.com/o-l-l-i
 - X: https://x.com/Olmirad
-- Version: 1.0.0
+- Version: 1.0.1.1 (Chain original mouse event handlers to maintain subgraph header button functionality in ComfyUI frontend 1.24.4 and later.)
 
 ---
 
@@ -113,6 +113,13 @@ Restart ComfyUI after installing.
 - The hover info shown over the preview reflects the lower-resolution preview image, not the full-size original.
 - No support for masking or region-based histograms (yet)
 - No histogram overlay on output image
+
+---
+
+## Version History
+
+- **1.0.1.1** Chain original mouse event handlers to maintain subgraph header button functionality in ComfyUI frontend 1.24.4 and later.
+- **1.0.0** Initial release
 
 ---
 

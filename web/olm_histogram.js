@@ -1,5 +1,4 @@
 import { app } from "../../scripts/app.js";
-
 import { HistogramWidget } from "./histogram_widget.js";
 
 function removeInputs(node, filter) {
@@ -114,6 +113,8 @@ app.registerExtension({
     };
 
     nodeType.prototype.onAdded = function () {
+      patchSingleWidgetMouseEvents(this);
+
       removeInputs(this, (input) => input.type === "STRING");
     };
 
@@ -136,8 +137,6 @@ app.registerExtension({
           key
         );
       }
-
-      this.forceUpdate();
     };
 
     nodeType.prototype.computeSize = function (out) {
@@ -167,29 +166,32 @@ app.registerExtension({
       }
     };
 
+    function patchSingleWidgetMouseEvents(node) {
+      const originalOnMouseDown = node.onMouseDown;
+      const originalOnMouseMove = node.onMouseMove;
+      const originalOnMouseLeave = node.onMouseLeave;
+
+      node.onMouseDown = function (e, pos, canvas) {
+        originalOnMouseDown?.call(this, e, pos, canvas);
+        return this.widget?.onMouseDown?.(e, pos);
+      };
+
+      node.onMouseMove = function (e, pos, canvas) {
+        originalOnMouseMove?.call(this, e, pos, canvas);
+        return this.widget?.onMouseMove?.(e, pos);
+      };
+
+      node.onMouseLeave = function (e, pos, canvas) {
+        originalOnMouseLeave?.call(this, e, pos, canvas);
+        return this.widget?.onMouseLeave?.(e, pos);
+      };
+    }
+
     const originalOnDrawForeground = nodeType.prototype.onDrawForeground;
     nodeType.prototype.onDrawForeground = function (ctx) {
       originalOnDrawForeground?.call(this, ctx);
       if (this.flags.collapsed) return;
       this.widget?.draw(ctx);
-    };
-
-    const originalOnMouseDown = nodeType.prototype.onMouseDown;
-    nodeType.prototype.onMouseDown = function (e, pos, canvas) {
-      originalOnMouseDown?.call(this, e, pos, canvas);
-      return this.widget?.onMouseDown(e, pos);
-    };
-
-    const originalOnMouseMove = nodeType.prototype.onMouseMove;
-    nodeType.prototype.onMouseMove = function (e, pos, canvas) {
-      originalOnMouseMove?.call(this, e, pos);
-      return this.widget?.onMouseMove(e, pos);
-    };
-
-    const originalOnMouseLeave = nodeType.prototype.onMouseLeave;
-    nodeType.prototype.onMouseLeave = function (e, pos, canvas) {
-      originalOnMouseLeave?.call(this, e, pos, canvas);
-      return this.widget?.onMouseLeave();
     };
   },
 });
